@@ -1,15 +1,18 @@
 const request = require('supertest');
 const expect = require('expect');
-
+const {ObjectID} = require('mongodb');
 const {app} = require('../server/server');
 const {Todo} = require('../DB/models/todos');
 
+const testTodos = [{
+    _id: new ObjectID(),
+    text: 'First todo'
+}, {
+    _id: new ObjectID(),
+    text: 'Second todo'
+}];
+
 beforeEach((done) => {
-    const testTodos = [{
-        text: 'First todo'
-    }, {
-        text: 'Second todo'
-    }];
     Todo.remove().then(() => {
         Todo.insertMany(testTodos).then(() => done());
     });
@@ -65,4 +68,28 @@ describe('GET /todos', () => {
             })
             .end(done);
     })
-})
+});
+
+describe('GET /todos:id', () => {
+    it('should return todo object', (done) => {
+        request(app)
+            .get(`/todos/${testTodos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(testTodos[0].text);
+            })
+            .end(done);
+    });
+    it('should return blank object with 404 when valid id is passed', (done) => {
+        request(app)
+            .get(`/todos/${new ObjectID()}`)
+            .expect(404)
+            .end(done);
+    });
+    it('should return blank object with 404 when invalid id is passed', (done) => {
+        request(app)
+            .get('/todos/123')
+            .expect(404)
+            .end(done);
+    });
+});
