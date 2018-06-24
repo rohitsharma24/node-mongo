@@ -80,12 +80,14 @@ describe('GET /todos:id', () => {
             })
             .end(done);
     });
+    
     it('should return blank object with 404 when valid id is passed', (done) => {
         request(app)
             .get(`/todos/${new ObjectID()}`)
             .expect(404)
             .end(done);
     });
+
     it('should return blank object with 404 when invalid id is passed', (done) => {
         request(app)
             .get('/todos/123')
