@@ -5,6 +5,7 @@ const {Todo} = require('../DB/models/todos');
 
 const app = express();
 
+
 app.use(bodyParser.json());
 
 app.post('/todo', (req, res) => {
@@ -13,7 +14,6 @@ app.post('/todo', (req, res) => {
         res.send(doc);
     }).catch((e) => res.status(400).send('Bad Request'));
 });
-
 
 const PORT = process.env.port || 3000;
 app.listen(3000, (err) => {
