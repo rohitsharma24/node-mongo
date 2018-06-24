@@ -17,7 +17,7 @@ app.post('/todos', (req, res) => {
 app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send({todos});
-    }).catch(e => res.sendStatus(400))
+    }).catch(e => res.status(500).send(e));
 });
 
 app.listen(3000, (err) => {
