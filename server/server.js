@@ -5,7 +5,7 @@ const mongoose = require('../DB/mongoose');
 const {Todo} = require('../DB/models/todos');
 
 const app = express();
-const PORT = process.env.port || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -34,7 +34,7 @@ app.get('/todos/:id', (req, res) => {
     }).catch(e => res.status(500).send());
 })
 
-app.listen(3000, (err) => {
+app.listen(PORT, (err) => {
     if(err){
         return console.log(`Error Starting Server at port ${PORT}`);
     }
