@@ -61,12 +61,12 @@ app.patch('/todos/:id', (req, res) => {
         body.completedAt = null;
         body.completed = false;
     }
-    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todos) => {
-        if(!todos) {
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+        if(!todo) {
             return res.status(404).send();
         }
-        res.send({todos});
-    }).catch(e => res.status(500).send())
+        res.send({todo});
+    }).catch(e => res.status(500).send());
 });
 
 app.listen(PORT, (err) => {

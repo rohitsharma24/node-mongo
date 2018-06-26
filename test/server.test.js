@@ -96,10 +96,9 @@ describe('GET /todos:id', () => {
     });
 });
 
-describe.only('DELETE /todos/:id', () => {
+describe('DELETE /todos/:id', () => {
     it('should delete todo', (done) => {
         let id = testTodos[1]._id.toHexString();
-        console.log(id);
         request(app)
             .delete(`/todos/${id}`)
             .expect(200)
@@ -126,6 +125,48 @@ describe.only('DELETE /todos/:id', () => {
         request(app)
             .delete('/todos/123')
             .expect(404)
+            .end(done);
+    });
+});
+
+describe('PATCH /todos/:id', () => {
+    it('should update data', (done) => {
+        const text = 'This is test update';
+        const id = testTodos[0]._id.toHexString();
+        const reqBody = {text, completed: true};
+        request(app)
+            .patch(`/todos/${id}`)
+            .send(reqBody)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(text);
+                expect(res.body.todo.completed).toBe(true);
+                //expect(res.body.todo.completedAt).toBeA(Number);
+            })
+            .end((err, res) => {
+                if(err) {
+                    return done(err);
+                }
+                Todo.findById(id).then((todo) => {
+                    expect(todo._id.toHexString()).toBe(id);
+                    done();
+                }).catch(e => done(e));
+            });
+    });
+
+    it('should give 404 when id not found', (done) => {
+        request(app)
+            .patch(`/todos/${new ObjectID()}`)
+            .send({text: 'updated text', completed: true})
+            .expect(404)
+            .end(done);
+    });
+
+    it('should give 400 when provided invalid id', (done) => {
+        request(app)
+            .patch('/todos/123')
+            .send({text: 'updated text', completed: true})
+            .expect(400)
             .end(done);
     });
 });
