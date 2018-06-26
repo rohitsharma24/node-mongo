@@ -9,6 +9,7 @@ mongoose.connect(MONGODB_URI, (err, client)=> {
         return {};
     }
     console.log('Successfully connected to MongoDB Server');
+    
 
 });    
 
