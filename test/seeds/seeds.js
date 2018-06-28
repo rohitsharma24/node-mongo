@@ -5,12 +5,12 @@ const {User} = require('../../DB/models/users');
 
 const userIdOne = new ObjectID();
 const testUsers = [{
-    _id: new ObjectID(),
+    _id: userIdOne,
     email: "rohitsh@example.com",
     password: "rohit123",
     tokens: [{
         access: 'auth',
-        token: jwt.sign({_id: userIdOne, access: 'auth'}, 'abc123').toString() 
+        token: jwt.sign({_id: userIdOne.toHexString(), access: 'auth'}, 'abc123').toString() 
     }]
 },
 {
@@ -29,7 +29,7 @@ const testTodos = [{
 }];
 
 const populateTodos = (done) => {
-    Todo.remove().then(() => {
+    Todo.remove({}).then(() => {
         return Todo.insertMany(testTodos);
     }).then(() => done());
 };
@@ -37,7 +37,7 @@ const populateTodos = (done) => {
 const populateUsers = (done) => {
     const testUserOne = new User(testUsers[0]).save();
     const testUserTwo = new User(testUsers[1]).save();
-    User.remove().then(() => {
+    User.remove({}).then(() => {
         return Promise.all([testUserOne, testUserTwo]);    
     }).then(() => done());
 };

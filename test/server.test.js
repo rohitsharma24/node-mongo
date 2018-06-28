@@ -1,9 +1,11 @@
 const request = require('supertest');
 const expect = require('expect');
 const {ObjectID} = require('mongodb');
+const jwt = require('jsonwebtoken');
 
 const {app} = require('../server/server');
 const {Todo} = require('../DB/models/todos');
+const {User} = require('../DB/models/users');
 const {testTodos, populateTodos, testUsers, populateUsers} = require('./seeds/seeds');
 
 beforeEach(populateUsers);
@@ -158,5 +160,57 @@ describe('PATCH /todos/:id', () => {
       .send({ text: 'updated text', completed: true })
       .expect(400)
       .end(done);
+  });
+});
+
+describe('POST /users', () => {
+  it('should create a new user', (done) => {
+    const reqBody = {email: 'testemail@example.com', password: 'testpassword'};
+    request(app)
+      .post('/users')
+      .send(reqBody)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.email).toBe(reqBody.email);
+        expect(res.headers['x-auth']).toBeTruthy();
+      })
+      .end(done);
+
+  });
+  it('should return 400, when user is already present', (done) => {
+    request(app)
+      .post('/users')
+      .send(testUsers[1])
+      .expect(400)
+      .end((err) => {
+        if(err) {
+          done(err);
+        }
+        User.find({email: testUsers[1].email}).then((user) => {
+          expect(user.length).toBe(1);
+          done();
+        }).catch(e => done(e));
+      })
+  });
+});
+
+describe('GET /user/me', () => {
+  it('should return user object', (done) => {
+    request(app)
+      .get('/users/me')
+      .set({'x-auth': testUsers[0].tokens[0].token})
+      .expect(200)
+      .expect((res) => {
+        expect(typeof res.body.email).toBeDefined();
+      })
+      .end(done);
+  });
+
+  it('should return 401', (done) => {
+    const token = jwt.sign({_id: new ObjectID().toHexString(), access: 'auth'}, 'abc123').toString();
+    request(app)
+      .get('/users/me')
+      .set({'x-auth': token})
+      .expect(401, done);
   });
 });
