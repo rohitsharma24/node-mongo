@@ -16,6 +16,7 @@ describe('POST /todos', () => {
     const text = 'This is test todo task';
     request(app)
       .post('/todos')
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .send({ text })
       .expect(200)
       .expect(res => expect(res.body.text).toBe(text))
@@ -35,6 +36,7 @@ describe('POST /todos', () => {
   it('should not create task when passed invalid data', (done) => {
     request(app)
       .post('/todos')
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .send({ text: '' })
       .expect(400)
       .end((err) => {
@@ -54,9 +56,10 @@ describe('GET /todos', () => {
   it('should return all todo task', (done) => {
     request(app)
       .get('/todos')
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .expect(200)
       .expect((res) => {
-        expect(res.body.todos.length).toBe(2);
+        expect(res.body.todos.length).toBe(1);
       })
       .end(done);
   });
@@ -210,6 +213,53 @@ describe('GET /user/me', () => {
     const token = jwt.sign({_id: new ObjectID().toHexString(), access: 'auth'}, 'abc123').toString();
     request(app)
       .get('/users/me')
+      .set({'x-auth': token})
+      .expect(401, done);
+  });
+});
+
+describe('POST /users/login', () => {
+  it('should login the registered user', (done) => {
+    const reqBody = {email: testUsers[0].email, password: testUsers[0].password};
+    request(app)
+      .post('/users/login')
+      .send(reqBody)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.email).toBe(reqBody.email);
+        expect(res.headers['x-auth']).toBeDefined();
+      })
+      .end(done);
+  });
+  it('should return 400, when email doesn\'t exist in DB', (done) => {
+    const reqBody = {email: "example@example.com", password: "rohit123"};
+    request(app)
+      .post('/users/login')
+      .send(reqBody)
+      .expect(400,done);
+  });
+  it('should return 400, when entered incorrect password', (done) => {
+    const reqBody = {email: "example@example.com", password: "rohit12"};
+    request(app)
+      .post('/users/login')
+      .send(reqBody)
+      .expect(400,done);
+  });
+});
+
+describe('DELETE /users/me/token', () => {
+  it('should return 200, delete a particular token or (logout)', (done) => {
+    const token  = testUsers[0].tokens[0].token;
+
+    request(app)
+      .delete('/users/me/token')
+      .set({'x-auth': token})
+      .expect(200, done);
+  });
+  it('should return 401, delete a particular token which doesnt exist or (already logout)', (done) => {
+    const token  = jwt.sign({_id: new ObjectID().toHexString(), access: 'auth'}, 'abc123').toString();
+    request(app)
+      .delete('/users/me/token')
       .set({'x-auth': token})
       .expect(401, done);
   });

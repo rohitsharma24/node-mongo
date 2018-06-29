@@ -4,6 +4,7 @@ const {Todo} = require('../../DB/models/todos');
 const {User} = require('../../DB/models/users');
 
 const userIdOne = new ObjectID();
+const userIdTwo = new ObjectID();
 const testUsers = [{
     _id: userIdOne,
     email: "rohitsh@example.com",
@@ -14,7 +15,7 @@ const testUsers = [{
     }]
 },
 {
-    _id: new ObjectID(),
+    _id: userIdTwo,
     email: "rohitsharma1@example.com",
     password: "rohit123"
 }
@@ -22,10 +23,12 @@ const testUsers = [{
 
 const testTodos = [{
     _id: new ObjectID(),
-    text: 'First todo'
+    text: 'First todo',
+    _creator: userIdOne
     }, {
     _id: new ObjectID(),
-    text: 'Second todo'
+    text: 'Second todo',
+    _creator: userIdTwo
 }];
 
 const populateTodos = (done) => {

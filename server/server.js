@@ -16,15 +16,18 @@ const PORT = process.env.PORT;
 
 app.use(bodyParser.json());
 
-app.post('/todos', (req, res) => {
-    var newTodo = new Todo({text: req.body.text});
+app.post('/todos', authenticate, (req, res) => {
+    var newTodo = new Todo({
+        text: req.body.text,
+        _creator: req.user._id
+    });
     newTodo.save().then((doc) => {
         res.send(doc);
     }).catch((e) => res.status(400).send());
 });
 
-app.get('/todos', (req, res) => {
-    Todo.find().then((todos) => {
+app.get('/todos', authenticate, (req, res) => {
+    Todo.find({_creator: req.user._id}).then((todos) => {
         res.send({todos});
     }).catch(e => res.status(500).send(e));
 });
@@ -92,6 +95,12 @@ app.post('/users/login', (req, res) => {
     User.findByCredentials(reqBody.email, reqBody.password).then((user) => {
         return user.generateAuthToken().then(token => res.header('x-auth', token).send(user));
     }).catch(e => res.status(400).send());
+});
+
+app.delete('/users/me/token', authenticate, (req, res) => {
+    req.user.removeToken(req.token).then(() => {
+        res.send();
+    }).catch(e => res.status(401).send());
 });
 
 app.listen(PORT, (err) => {
