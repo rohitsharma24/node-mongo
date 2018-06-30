@@ -17,7 +17,11 @@ const testUsers = [{
 {
     _id: userIdTwo,
     email: "rohitsharma1@example.com",
-    password: "rohit123"
+    password: "rohit123",
+    tokens: [{
+        access: 'auth',
+        token: jwt.sign({_id: userIdTwo.toHexString(), access: 'auth'}, 'abc123').toString() 
+    }]
 }
 ];
 

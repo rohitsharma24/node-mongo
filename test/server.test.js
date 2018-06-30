@@ -69,6 +69,7 @@ describe('GET /todos:id', () => {
   it('should return todo object', (done) => {
     request(app)
       .get(`/todos/${testTodos[0]._id.toHexString()}`)
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .expect(200)
       .expect((res) => {
         expect(res.body.todo.text).toBe(testTodos[0].text);
@@ -79,6 +80,7 @@ describe('GET /todos:id', () => {
   it('should return blank object with 404 when valid id is passed', (done) => {
     request(app)
       .get(`/todos/${new ObjectID()}`)
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .expect(404)
       .end(done);
   });
@@ -86,6 +88,7 @@ describe('GET /todos:id', () => {
   it('should return blank object with 404 when invalid id is passed', (done) => {
     request(app)
       .get('/todos/123')
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .expect(404)
       .end(done);
   });
@@ -96,6 +99,7 @@ describe('DELETE /todos/:id', () => {
     const id = testTodos[1]._id.toHexString();
     request(app)
       .delete(`/todos/${id}`)
+      .set({'x-auth': testUsers[1].tokens[0].token})
       .expect(200)
       .expect((res) => {
         expect(res.body.todo._id).toBe(id);
@@ -112,13 +116,15 @@ describe('DELETE /todos/:id', () => {
   });
   it('should return 404 when valid id is passed', (done) => {
     request(app)
-      .delete(`/todos/${new ObjectID()}`)
+      .delete(`/todos/${new ObjectID().toHexString()}`)
+      .set({'x-auth': testUsers[1].tokens[0].token})
       .expect(404)
       .end(done);
   });
   it('should return 404 when invalid id is passed', (done) => {
     request(app)
       .delete('/todos/123')
+      .set({'x-auth': testUsers[1].tokens[0].token})
       .expect(404)
       .end(done);
   });
@@ -131,6 +137,7 @@ describe('PATCH /todos/:id', () => {
     const reqBody = { text, completed: true };
     request(app)
       .patch(`/todos/${id}`)
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .send(reqBody)
       .expect(200)
       .expect((res) => {
@@ -152,6 +159,7 @@ describe('PATCH /todos/:id', () => {
   it('should give 404 when id not found', (done) => {
     request(app)
       .patch(`/todos/${new ObjectID()}`)
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .send({ text: 'updated text', completed: true })
       .expect(404)
       .end(done);
@@ -160,6 +168,7 @@ describe('PATCH /todos/:id', () => {
   it('should give 400 when provided invalid id', (done) => {
     request(app)
       .patch('/todos/123')
+      .set({'x-auth': testUsers[0].tokens[0].token})
       .send({ text: 'updated text', completed: true })
       .expect(400)
       .end(done);
