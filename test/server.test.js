@@ -236,9 +236,20 @@ describe('POST /users/login', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body.email).toBe(reqBody.email);
-        expect(res.headers['x-auth']).toBeDefined();
+        expect(res.headers['x-auth']).toBeTruthy();
       })
-      .end(done);
+      .end((err, res) => {
+        if(err) {
+          return done(err);
+        }
+        User.findById(testUsers[0]._id).then((user) => {
+          expect(user.toObject().tokens[1]).toMatchObject({
+            access: 'auth',
+            token: res.headers['x-auth']
+          });
+          done();
+        }).catch(e => done(e));
+      });
   });
   it('should return 400, when email doesn\'t exist in DB', (done) => {
     const reqBody = {email: "example@example.com", password: "rohit123"};
