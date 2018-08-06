@@ -1,0 +1,308 @@
+{
+	"info": {
+		"_postman_id": "5e1a36f0-dc77-40cd-ace3-23bcd75d98f1",
+		"name": "TodoApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create todos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "37c359b4-5bbe-4aba-9818-07ca6bf25a9e",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Status is 200', function() { ",
+							"    const body = JSON.parse(responseBody);",
+							"    if(!_.isEmpty(body)){",
+							"        postman.setEnvironmentVariable('todoId', _.get(body, '_id', ''));",
+							"    } ",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-auth",
+						"value": "{{x-auth}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"text\": \"Ready for sanju\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}todos",
+					"host": [
+						"{{url}}todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all todos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "906fc9b9-f0f5-49f3-b915-e4584cafdd89",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth",
+						"value": "{{x-auth}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}todos",
+					"host": [
+						"{{url}}todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get todo by id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth",
+						"value": "{{x-auth}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}todos/{{todoId}}",
+					"host": [
+						"{{url}}todos"
+					],
+					"path": [
+						"{{todoId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update by Id",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-auth",
+						"value": "{{x-auth}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"text\": \"Not going for sanju\",\n\t\"completed\": true\n}"
+				},
+				"url": {
+					"raw": "{{url}}todos/{{todoId}}",
+					"host": [
+						"{{url}}todos"
+					],
+					"path": [
+						"{{todoId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete todo by Id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth",
+						"value": "{{x-auth}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}todos/{{todoId}}",
+					"host": [
+						"{{url}}todos"
+					],
+					"path": [
+						"{{todoId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e7fcb6b2-b42c-4553-b853-066e13e471ca",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    if(pm.response.to.have.status(200)) {",
+							"        postman.setEnvironmentVariable('x-auth', postman.getResponseHeader('x-auth'));",
+							"    }",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"rohitsharma@gmail.com\",\n\t\"password\": \"pass123\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}users",
+					"host": [
+						"{{url}}users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user by token",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth",
+						"value": "{{x-auth}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}users/me",
+					"host": [
+						"{{url}}users"
+					],
+					"path": [
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "04b09713-a784-4001-92f5-6ed90b0c65bc",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    if(pm.response.to.have.status(200)) {",
+							"        postman.setEnvironmentVariable('x-auth', postman.getResponseHeader('x-auth'));",
+							"    }",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"rohitsharma@gmail.com\",\n\t\"password\": \"pass123\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}users/login",
+					"host": [
+						"{{url}}users"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout by token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "33cdfb0e-f80b-4316-95de-212514e30044",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    if(pm.response.to.have.status(200)) {",
+							"        postman.unsetEnvironmentVariable('x-auth');",
+							"    }",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth",
+						"value": "{{x-auth}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}users/me/token",
+					"host": [
+						"{{url}}users"
+					],
+					"path": [
+						"me",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

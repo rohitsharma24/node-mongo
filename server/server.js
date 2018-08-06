@@ -10,6 +10,7 @@ const {mongoose} = require('../DB/mongoose');
 const {Todo} = require('../DB/models/todos');
 const {User} = require('../DB/models/users');
 const {authenticate} = require('./middleware/authenticate');
+const version = require('../package.json').version;
 
 const app = express();
 const PORT = process.env.PORT;
@@ -84,7 +85,7 @@ app.post('/users', (req, res) => {
     const newUser = new User(reqBody);
     newUser.save().then(() => newUser.generateAuthToken())
         .then(token => res.header('x-auth', token).send(newUser.toJSON()))
-        .catch(e => res.status(400).send(e)); 
+        .catch(e => res.status(400).send()); 
 });
 
 app.get('/users/me', authenticate, (req, res) => {
@@ -102,6 +103,10 @@ app.delete('/users/me/token', authenticate, (req, res) => {
     req.user.removeToken(req.token).then(() => {
         res.send();
     }).catch(e => res.status(401).send());
+});
+
+app.get('/version', (req, res) => {
+    res.send(version);
 });
 
 app.listen(PORT, (err) => {
